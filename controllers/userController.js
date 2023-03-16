@@ -1,4 +1,12 @@
 import { validationResult } from "express-validator";
+import { userRepository, studentsRepository } from "../repositories/index.js";
+import { EventEmitter } from "node:events";
+
+const myEvent = new EventEmitter();
+//listen
+myEvent.on("event.register.user", (params) => {
+	console.log(`Listening they talk about: ${JSON.stringify(params)} `);
+});
 
 const login = async (req, res) => {
 	// Finds the validation errors in this request and wraps them in an object with handy functions
@@ -7,13 +15,33 @@ const login = async (req, res) => {
 		return res.status(400).json({ errors: errors.array() });
 	}
 
-	//user name, password
+	//get user name, password from request
 	const { username, pasword } = req.body;
-	res.send("Post login user hahahaaa");
+
+	//call repository
+	await userRepository.login(username, pasword);
+	res.status(200).json({
+		message: "Login user successfulled",
+		data: "User detail"
+	});
 };
 
 const register = async (req, res) => {
-	res.send("Post register user");
+	//destructuring
+	const { userName, password, name, email, phoneNumber, address } = req.body;
+	await userRepository.register({
+		userName,
+		password,
+		name,
+		email,
+		phoneNumber,
+		address
+	});
+	//Events Emitter
+	myEvent.emit("event.register.user", req.body);
+	res.status(201).json({
+		message: "Register successfully"
+	});
 };
 
 const getUserDetail = async (req, res) => {

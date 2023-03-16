@@ -1,6 +1,10 @@
 import { validationResult } from "express-validator";
 
-const getAllStudents = async (req, res) => {};
+const getAllStudents = async (req, res) => {
+	res.status(500).json({
+		message: "Can not get students"
+	});
+};
 
 const getStudentById = async (req, res) => {};
 

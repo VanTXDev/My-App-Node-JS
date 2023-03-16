@@ -1,10 +1,12 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import { userRouter, studentRouter } from "./routers/index.js";
 dotenv.config(); //must have to use environment variables
+import connect from "./database/database.js";
+import { userRouter, studentRouter } from "./routers/index.js";
 
 //init app express
 const app = express();
+
 app.use(express.json());
 const PORT = process.env.PORT ?? 3000;
 
@@ -17,5 +19,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, async () => {
+	await connect();
 	console.log("Listening on Port: " + PORT);
 });
