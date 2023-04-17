@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
-import { userRepository, studentsRepository } from "../repositories/index.js";
+import { userRepository } from "../repositories/index.js";
 import { EventEmitter } from "node:events";
+import HttpStatusCode from "../exceptions/HTTPStatusCode.js";
 
 const myEvent = new EventEmitter();
 //listen
@@ -12,7 +13,9 @@ const login = async (req, res) => {
 	// Finds the validation errors in this request and wraps them in an object with handy functions
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return res.status(400).json({ errors: errors.array() });
+		return res
+			.status(HttpStatusCode.BAD_REQUEST)
+			.json({ errors: errors.array() });
 	}
 
 	//get user name, password from request
@@ -20,7 +23,7 @@ const login = async (req, res) => {
 
 	//call repository
 	await userRepository.login(username, pasword);
-	res.status(200).json({
+	res.status(HttpStatusCode.OK).json({
 		message: "Login user successfulled",
 		data: "User detail"
 	});
@@ -29,27 +32,38 @@ const login = async (req, res) => {
 const register = async (req, res) => {
 	//destructuring
 	const { userName, password, name, email, phoneNumber, address } = req.body;
-	await userRepository.register({
-		userName,
-		password,
-		name,
-		email,
-		phoneNumber,
-		address
-	});
-	//Events Emitter
-	myEvent.emit("event.register.user", req.body);
-	res.status(201).json({
-		message: "Register successfully"
-	});
+	try {
+		const userRegisted = await userRepository.register({
+			userName,
+			password,
+			name,
+			email,
+			phoneNumber,
+			address
+		});
+		//Events Emitter
+		myEvent.emit("event.register.user", req.body);
+		res.status(HttpStatusCode.INSERT_OK).json({
+			message: "Register successfully",
+			data: userRegisted
+		});
+	} catch (exceptions) {
+		res.status(HttpStatusCode.BAD_REQUEST).json({
+			message: "Register failed",
+			data: exceptions
+		});
+	}
 };
 
 const getUserDetail = async (req, res) => {
-	res.send("Get user detail");
+	res.status(HttpStatusCode.OK).json({
+		message: "Get user detail successfully",
+		data: [{ name: "Quyt", age: 12, mail: "Quytdeptrai@gmail.com" }]
+	});
 };
 
 const getAllUsers = async (req, res) => {
-	res.status(200).json({
+	res.status(HttpStatusCode.OK).json({
 		message: "Get all users successfully",
 		data: [
 			{ name: "Quyt", age: 12, mail: "Quytdeptrai@gmail.com" },

@@ -11,9 +11,24 @@ const insertStudent = async ({
 	phoneNumber,
 	address
 }) => {
-	console.log("insert student");
+	//valition already done
+	console.log("Register user with: \t Name: " + name, "\t Email: " + email);
+};
+
+//language English,Vietnamese,japanese
+const updateStudent = async ({
+	name,
+	email,
+	language,
+	gender,
+	phoneNumber,
+	address
+}) => {
+	//valition already done
+	console.log("Update user with: \t Name: " + name, "\t Email: " + email);
 };
 export default {
 	getAllStudents,
-	insertStudent
+	insertStudent,
+	updateStudent
 };
