@@ -18,7 +18,9 @@ export default mongoose.model(
 			type: String,
 			required: true,
 			validate: {
-				validator: (value) => isEmail,
+				validator: function (v) {
+					return v.length > 3;
+				},
 				message: "Email is required"
 			}
 		},
@@ -36,7 +38,7 @@ export default mongoose.model(
 			required: true,
 			validate: {
 				validator: function (v) {
-					return v.length > 8 && v.length < 16;
+					return v.length > 3;
 				},
 				message: "Password is required"
 			}

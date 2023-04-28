@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import { userRepository } from "../repositories/index.js";
 import { EventEmitter } from "node:events";
+import Exception from "../exceptions/Exception.js";
 import HttpStatusCode from "../exceptions/HTTPStatusCode.js";
 
 const myEvent = new EventEmitter();
@@ -31,10 +32,10 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
 	//destructuring
-	const { userName, password, name, email, phoneNumber, address } = req.body;
+	const { username, password, name, email, phoneNumber, address } = req.body;
 	try {
 		const userRegisted = await userRepository.register({
-			userName,
+			username,
 			password,
 			name,
 			email,
@@ -47,10 +48,9 @@ const register = async (req, res) => {
 			message: "Register successfully",
 			data: userRegisted
 		});
-	} catch (exceptions) {
+	} catch (exception) {
 		res.status(HttpStatusCode.BAD_REQUEST).json({
-			message: "Register failed",
-			data: exceptions
+			message: exception.toString()
 		});
 	}
 };

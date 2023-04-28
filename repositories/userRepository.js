@@ -3,12 +3,12 @@ import { User } from "../models/index.js";
 import Exception from "../exceptions/Exception.js";
 import bcrypt from "bcrypt";
 
-const login = async ({ userName, password }) => {
+const login = async ({ username, password }) => {
 	print("Login user in repositories", OuputType.INFORMATION);
 };
 
 const register = async ({
-	userName,
+	username,
 	password,
 	name,
 	email,
@@ -33,16 +33,19 @@ const register = async ({
 			password,
 			parseInt(process.env.SALT_ROUND)
 		);
-		const newUser = new User.create({
+		const newUser = await User.create({
 			name,
 			email,
-			userName,
+			username,
 			password: hashedPassword,
 			phoneNumber,
 			address
 		});
 		// await newUser.save();
-		return newUser;
+		return {
+			...newUser._doc,
+			password: "Not showing"
+		};
 	} catch (exceptions) {
 		//check model validation here
 		throw new Exception(Exception.REGISTER_USER_FAILED);
